@@ -2,40 +2,21 @@
 
 BASE=/srv/zabbix
 
-init_user () {
-groupadd --system zabbix
-useradd --system -g zabbix -d $BASE -s /sbin/nologin -c "Zabbix Monitoring System" zabbix
 
-for D in lib etc var bin  db
- do
-  mkdir -p $BASE/$D
+build_zbx () {
+
+cd /srv/zabbix/src
+
+./configure --enable-server --with-postgresql --with-net-snmp
+}
+
+select PB in init_postgres init_zabbix.yml  no
+  do
+	  break
 done
 
-chown -R zabbix:zabbix  $BASE
 
-}
-
-download () {
-
-mkdir $BASE/src
-cd $BASE/src
-wget -O zabbix.zip https://git.zabbix.com/rest/api/latest/projects/ZBX/repos/zabbix/archive?format=zip
-unzip zabbix.zip
-
-}
-
-init_db () {
-install -y postgresql
-dnf module reset postgresql
-dnf module enable postgresql:12
-dnf install postgresql-server
-postgresql-setup --initdb
-systemctl enable postgresql
-systemctl start postgresql
-
-}
-
-
+[ "$PB" != "no" ] && ansible-playbook $HOME/github/pe-init/local/${PB}.yml
 
 #### main
 
