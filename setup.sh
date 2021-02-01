@@ -21,3 +21,8 @@ done
 #### main
 
 $1
+##grep peweb /etc/php-fpm.d/www.conf
+#user = peweb
+#group = peweb
+
+#find /var -user apache -exec chown peweb:peweb {} \;
